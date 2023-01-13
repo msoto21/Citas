@@ -6,9 +6,10 @@ interface Props {
   cita: Cita | undefined;
   closeForm: () => void;
   createOrEdit: (cita: Cita) => void;
+  submitting: boolean;
 }
 
-export default function CitaForm({cita: selectedCita, closeForm, createOrEdit} : Props) {
+export default function CitaForm({cita: selectedCita, closeForm, createOrEdit, submitting} : Props) {
 
   const initialState = selectedCita ?? {
     id: '',
@@ -39,10 +40,10 @@ export default function CitaForm({cita: selectedCita, closeForm, createOrEdit} :
         <Form.TextArea placeholder='Descripción' value={cita.descripcion} name='descripcion' onChange={handleInputChange} />
         <Form.Input placeholder='Cliente' value={cita.cliente} name='cliente' onChange={handleInputChange} />
         <Form.Input placeholder='Nota' value={cita.nota} name='nota' onChange={handleInputChange} />
-        <Form.Input placeholder='Fecha y hora de inicio' value={cita.fechaHoraInicio} name='fechaHoraInicio' onChange={handleInputChange} />
-        <Form.Input placeholder='Fecha y hora termino' value={cita.fechaHoraFin} name='fechaHoraFin' onChange={handleInputChange} />
+        <Form.Input type="date" placeholder='Fecha y hora de inicio' value={cita.fechaHoraInicio} name='fechaHoraInicio' onChange={handleInputChange} />
+        <Form.Input type="date" placeholder='Fecha y hora termino' value={cita.fechaHoraFin} name='fechaHoraFin' onChange={handleInputChange} />
         <Form.Input placeholder='Tratamientos' value={cita.tratamientos} name='tratamientos' onChange={handleInputChange} />
-        <Button floated="right" positive type="submit" content='Submit' />
+        <Button loading={submitting} floated="right" positive type="submit" content='Submit' />
         <Button onClick={closeForm} floated="right" type="button" content='Cancel' />
       </Form>
     </Segment>

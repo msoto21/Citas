@@ -1,3 +1,4 @@
+import { SyntheticEvent, useState } from 'react';
 import { Button, Item, Label, Segment } from 'semantic-ui-react';
 import { Cita } from '../../../app/models/cita';
 
@@ -5,9 +6,17 @@ interface Props {
   citas: Cita[];
   selectCita: (id: string) => void;
   deleteCita: (id: string) => void;
+  submitting: boolean;
 }
 
-export default function CitaList({citas, selectCita, deleteCita}: Props) {
+export default function CitaList({citas, selectCita, deleteCita, submitting}: Props) {
+  const [target, setTarget] = useState("");
+
+  function handleCitaDelete(e: SyntheticEvent<HTMLButtonElement>, id: string) {
+    setTarget(e.currentTarget.name);
+    deleteCita(id);
+  }
+
   return (
     <Segment>
       <Item.Group divided>
@@ -22,7 +31,13 @@ export default function CitaList({citas, selectCita, deleteCita}: Props) {
               </Item.Description>
               <Item.Extra>
                 <Button onClick={() => selectCita(cita.id)} floated='right' content='View' color='blue' />
-                <Button onClick={() => deleteCita(cita.id)} floated='right' content='Delete' color='red' />
+                <Button 
+                  name={cita.id}
+                  loading={submitting && target === cita.id} 
+                  onClick={(e) => handleCitaDelete(e, cita.id)} 
+                  floated='right' 
+                  content='Delete' 
+                  color='red' />
                 <Label basic content={cita.tratamientos} />
               </Item.Extra>
             </Item.Content>

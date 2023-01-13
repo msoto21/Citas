@@ -14,14 +14,15 @@ interface Props {
   closeForm: () => void;
   createOrEdit: (cita: Cita) => void;
   deleteCita: (id: string) => void;
+  submitting: boolean;
 }
 
 export default function CitaDashboard({ citas, selectedCita, selectCita, cancelSelectCita,
-   editMode, openForm, closeForm, createOrEdit, deleteCita }: Props) {
+   editMode, openForm, closeForm, createOrEdit, deleteCita, submitting }: Props) {
   return (
     <Grid>
       <Grid.Column width='10'>
-        <CitaList citas={citas} selectCita={selectCita} deleteCita={deleteCita}/>
+        <CitaList citas={citas} selectCita={selectCita} deleteCita={deleteCita} submitting={submitting}/>
       </Grid.Column>
       <Grid.Column width='6'>
         {selectedCita && !editMode &&
@@ -30,7 +31,7 @@ export default function CitaDashboard({ citas, selectedCita, selectCita, cancelS
           cancelSelectCita={cancelSelectCita}
           openForm={openForm} 
         />}
-        {editMode && <CitaForm closeForm={closeForm} cita={selectedCita} createOrEdit={createOrEdit} />}
+        {editMode && <CitaForm closeForm={closeForm} cita={selectedCita} createOrEdit={createOrEdit} submitting={submitting} />}
       </Grid.Column>
     </Grid>
   )
