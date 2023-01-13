@@ -57,6 +57,7 @@ function App() {
       cita.id = uuid();
       agent.Citas.create(cita).then(() => {
         setCitas([...citas, cita]);
+        setSelectedCita(cita);
         setEditMode(false);
         setSubmitting(false);
       })

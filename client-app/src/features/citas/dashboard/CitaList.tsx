@@ -12,7 +12,7 @@ interface Props {
 export default function CitaList({citas, selectCita, deleteCita, submitting}: Props) {
   const [target, setTarget] = useState("");
 
-  function handleCitaDelete(e: SyntheticEvent<HTMLButtonElement>, id: string) {
+  function handleDeleteCita(e: SyntheticEvent<HTMLButtonElement>, id: string) {
     setTarget(e.currentTarget.name);
     deleteCita(id);
   }
@@ -34,7 +34,7 @@ export default function CitaList({citas, selectCita, deleteCita, submitting}: Pr
                 <Button 
                   name={cita.id}
                   loading={submitting && target === cita.id} 
-                  onClick={(e) => handleCitaDelete(e, cita.id)} 
+                  onClick={(e) => handleDeleteCita(e, cita.id)} 
                   floated='right' 
                   content='Delete' 
                   color='red' />
