@@ -1,15 +1,11 @@
+import { observer } from 'mobx-react-lite';
 import { SyntheticEvent, useState } from 'react';
 import { Button, Item, Label, Segment } from 'semantic-ui-react';
-import { Cita } from '../../../app/models/cita';
+import { useStore } from '../../../app/stores/store';
 
-interface Props {
-  citas: Cita[];
-  selectCita: (id: string) => void;
-  deleteCita: (id: string) => void;
-  submitting: boolean;
-}
-
-export default function CitaList({citas, selectCita, deleteCita, submitting}: Props) {
+export default observer(function CitaList() {
+  const { citaStore } = useStore();
+  const { deleteCita, citasByDate, loading } = citaStore;
   const [target, setTarget] = useState("");
 
   function handleDeleteCita(e: SyntheticEvent<HTMLButtonElement>, id: string) {
@@ -20,7 +16,7 @@ export default function CitaList({citas, selectCita, deleteCita, submitting}: Pr
   return (
     <Segment>
       <Item.Group divided>
-        {citas.map(cita => (
+        {citasByDate.map(cita => (
           <Item key={cita.id}>
             <Item.Content>
               <Item.Header as='a'>{cita.titulo}</Item.Header>
@@ -30,10 +26,10 @@ export default function CitaList({citas, selectCita, deleteCita, submitting}: Pr
                 <div>{cita.cliente}, {cita.nota}</div>
               </Item.Description>
               <Item.Extra>
-                <Button onClick={() => selectCita(cita.id)} floated='right' content='View' color='blue' />
+                <Button onClick={() => citaStore.selectCita(cita.id)} floated='right' content='View' color='blue' />
                 <Button 
                   name={cita.id}
-                  loading={submitting && target === cita.id} 
+                  loading={loading && target === cita.id} 
                   onClick={(e) => handleDeleteCita(e, cita.id)} 
                   floated='right' 
                   content='Delete' 
@@ -46,4 +42,4 @@ export default function CitaList({citas, selectCita, deleteCita, submitting}: Pr
       </Item.Group>
     </Segment>
   )
-}
+})

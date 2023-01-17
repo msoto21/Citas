@@ -1,15 +1,11 @@
+import { observer } from "mobx-react-lite";
 import { ChangeEvent, useState } from "react";
 import { Button, Form, Segment } from "semantic-ui-react";
-import { Cita } from "../../../app/models/cita";
+import { useStore } from "../../../app/stores/store";
 
-interface Props {
-  cita: Cita | undefined;
-  closeForm: () => void;
-  createOrEdit: (cita: Cita) => void;
-  submitting: boolean;
-}
-
-export default function CitaForm({cita: selectedCita, closeForm, createOrEdit, submitting} : Props) {
+export default observer(function CitaForm() {
+  const { citaStore } = useStore();
+  const { selectedCita, closeForm, createCita, updateCita, loading } = citaStore;
 
   const initialState = selectedCita ?? {
     id: '',
@@ -25,7 +21,7 @@ export default function CitaForm({cita: selectedCita, closeForm, createOrEdit, s
   const [cita, setCita] = useState(initialState);
 
   function handleSubmit() {
-    createOrEdit(cita);
+    cita.id ? updateCita(cita) : createCita(cita);
   }
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -43,9 +39,9 @@ export default function CitaForm({cita: selectedCita, closeForm, createOrEdit, s
         <Form.Input type="date" placeholder='Fecha y hora de inicio' value={cita.fechaHoraInicio} name='fechaHoraInicio' onChange={handleInputChange} />
         <Form.Input type="date" placeholder='Fecha y hora termino' value={cita.fechaHoraFin} name='fechaHoraFin' onChange={handleInputChange} />
         <Form.Input placeholder='Tratamientos' value={cita.tratamientos} name='tratamientos' onChange={handleInputChange} />
-        <Button loading={submitting} floated="right" positive type="submit" content='Submit' />
+        <Button loading={loading} floated="right" positive type="submit" content='Submit' />
         <Button onClick={closeForm} floated="right" type="button" content='Cancel' />
       </Form>
     </Segment>
   )
-}
+})

@@ -1,13 +1,13 @@
 import { Card, Image, Button } from "semantic-ui-react";
-import { Cita } from "../../../app/models/cita";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { useStore } from "../../../app/stores/store";
 
-interface Props {
-  cita: Cita;
-  cancelSelectCita: () => void;
-  openForm: (id: string) => void;
-}
+export default function CitaDetails() {
+  const { citaStore } = useStore();
+  const { selectedCita: cita, openForm, cancelSelectedCita } = citaStore;
 
-export default function CitaDetails({cita, cancelSelectCita, openForm}: Props) {
+  if (!cita) return <LoadingComponent />;
+
   return (
     <Card fluid>
       <Image src={`/assets/categoryImages/${cita.tratamientos}.jpg`} />
@@ -23,7 +23,7 @@ export default function CitaDetails({cita, cancelSelectCita, openForm}: Props) {
       <Card.Content extra>
         <Button.Group>
           <Button onClick={() => openForm(cita.id)} basic color="blue" content="Edit" />
-          <Button onClick={cancelSelectCita} basic color="grey" content="Cancel" />
+          <Button onClick={cancelSelectedCita} basic color="grey" content="Cancel" />
         </Button.Group>
       </Card.Content>
     </Card>
