@@ -1,13 +1,19 @@
 import { observer } from "mobx-react-lite";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button, Form, Segment } from "semantic-ui-react";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { Cita } from "../../../app/models/cita";
 import { useStore } from "../../../app/stores/store";
+import {v4 as uuid } from 'uuid';
 
 export default observer(function CitaForm() {
   const { citaStore } = useStore();
-  const { selectedCita, closeForm, createCita, updateCita, loading } = citaStore;
+  const { createCita, updateCita, loading, loadCita, loadingInitial } = citaStore;
+  const {id} = useParams();
+  const navigate = useNavigate();
 
-  const initialState = selectedCita ?? {
+  const [cita, setCita] = useState<Cita>({
     id: '',
     fechaHoraInicio: '',
     fechaHoraFin: '',
@@ -16,18 +22,27 @@ export default observer(function CitaForm() {
     nota: '',
     titulo: '',
     tratamientos: ''
-  }
+  });
 
-  const [cita, setCita] = useState(initialState);
+  useEffect(() => {
+    if (id) loadCita(id).then(cita => setCita(cita!));
+  }, [id, loadCita]);
 
   function handleSubmit() {
-    cita.id ? updateCita(cita) : createCita(cita);
+    if (!cita.id) {
+      cita.id = uuid();
+      createCita(cita).then(() => {navigate(`/citas/${cita.id}`)});
+    } else {
+      updateCita(cita).then(() => {navigate(`/citas/${cita.id}`)});
+    }
   }
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const {name, value} = event.target;
     setCita({...cita, [name]: value});
   }
+
+  if (loadingInitial) return <LoadingComponent content="Loading cita..." />
 
   return (
     <Segment clearing>
@@ -40,7 +55,7 @@ export default observer(function CitaForm() {
         <Form.Input type="date" placeholder='Fecha y hora termino' value={cita.fechaHoraFin} name='fechaHoraFin' onChange={handleInputChange} />
         <Form.Input placeholder='Tratamientos' value={cita.tratamientos} name='tratamientos' onChange={handleInputChange} />
         <Button loading={loading} floated="right" positive type="submit" content='Submit' />
-        <Button onClick={closeForm} floated="right" type="button" content='Cancel' />
+        <Button as={Link} to='/citas' floated="right" type="button" content='Cancel' />
       </Form>
     </Segment>
   )

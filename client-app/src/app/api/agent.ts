@@ -31,9 +31,9 @@ const requests = {
 const Citas = {
   list: () => requests.get<Cita[]>('/citas'),
   details: (id: string) => requests.get<Cita>(`/citas/${id}`),
-  create: (cita: Cita) => requests.post<void>('/citas', cita), // axios.post<void>('/citas', cita),
-  update: (cita: Cita) => requests.put<void>(`/citas/${cita.id}`, cita), // axios.put<void>(`/citas/${cita.id}`, cita),
-  delete: (id: string) => requests.del<void>(`/citas/${id}`) //axios.delete<void>(`/citas/${id}`)
+  create: (cita: Cita) => requests.post<void>('/citas', cita),
+  update: (cita: Cita) => requests.put<void>(`/citas/${cita.id}`, cita),
+  delete: (id: string) => requests.del<void>(`/citas/${id}`)
 }
 
 const agent = {

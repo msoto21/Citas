@@ -8,7 +8,7 @@ export default class CitaStore {
   selectedCita: Cita | undefined = undefined;
   editMode = false;
   loading = false;
-  loadingInitial = true;
+  loadingInitial = false;
 
   constructor() {
     makeAutoObservable(this)
@@ -24,9 +24,7 @@ export default class CitaStore {
     try {
       const citas = await agent.Citas.list();
       citas.forEach(cita => {
-        cita.fechaHoraInicio = cita.fechaHoraInicio.split('T')[0];
-        cita.fechaHoraFin = cita.fechaHoraFin.split('T')[0];
-        this.citaRegistry.set(cita.id, cita);
+        this.setCita(cita);
       })
       this.setLoadingInitial(false);
     } catch (error) {
@@ -35,25 +33,39 @@ export default class CitaStore {
     }
   }
 
+  loadCita = async (id:string) => {
+    let cita = this.getCita(id);
+    if (cita) {
+      this.selectedCita = cita;
+      return cita;
+    }
+    else {
+      this.loadingInitial = true;
+      try {
+        cita = await agent.Citas.details(id);
+        this.setCita(cita);
+        runInAction(() => this.selectedCita = cita);
+        this.setLoadingInitial(false);
+        return cita;
+      } catch (error) {
+        console.log(error);
+        this.setLoadingInitial(false);
+      }
+    }
+  }
+
+  private setCita = (cita: Cita) => {
+    cita.fechaHoraInicio = cita.fechaHoraInicio.split('T')[0];
+    cita.fechaHoraFin = cita.fechaHoraFin.split('T')[0];
+    this.citaRegistry.set(cita.id, cita);
+  }
+
+  private getCita = (id: string) => {
+    return this.citaRegistry.get(id);
+  }
+
   setLoadingInitial = (state: boolean) => {
     this.loadingInitial = state;
-  }
-
-  selectCita = (id: string) => {
-    this.selectedCita = this.citaRegistry.get(id);
-  }
-
-  cancelSelectedCita = () => {
-    this.selectedCita = undefined;
-  }
-
-  openForm = (id?: string) => {
-    id ? this.selectCita(id) : this.cancelSelectedCita();
-    this.editMode = true;
-  }
-
-  closeForm = () => {
-    this.editMode = false;
   }
 
   createCita = async (cita: Cita) => {
@@ -99,7 +111,6 @@ export default class CitaStore {
       await agent.Citas.delete(id);
       runInAction(() => {
         this.citaRegistry.delete(id);
-        if (this.selectedCita?.id === id) this.cancelSelectedCita();
         this.loading = false;
       })
     } catch (error) {
