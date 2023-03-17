@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Grid } from "semantic-ui-react";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { useStore } from "../../../app/stores/store";
+import CitaFilters from "./CitaFilters";
 import CitaList from "./CitaList";
 
 export default observer(function CitaDashboard() {
@@ -21,7 +22,7 @@ export default observer(function CitaDashboard() {
         <CitaList />
       </Grid.Column>
       <Grid.Column width='6'>
-        <h2>Cita filters</h2>
+        <CitaFilters />
       </Grid.Column>
     </Grid>
   )

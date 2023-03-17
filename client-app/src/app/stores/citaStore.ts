@@ -19,6 +19,16 @@ export default class CitaStore {
       Date.parse(a.fechaHoraInicio) - Date.parse(b.fechaHoraInicio));
   }
 
+  get groupedCitas() {
+    return Object.entries(
+      this.citasByDate.reduce((citas, cita) => {
+        const date =  cita.fechaHoraInicio;
+        citas[date] = citas[date] ? [...citas[date], cita] : [cita];
+        return citas;
+      }, {} as {[key: string]: Cita[]})
+    )
+  }
+
   loadCitas = async () => {
     this.setLoadingInitial(true);
     try {

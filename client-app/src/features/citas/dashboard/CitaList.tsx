@@ -1,46 +1,25 @@
 import { observer } from 'mobx-react-lite';
-import { SyntheticEvent, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Button, Item, Label, Segment } from 'semantic-ui-react';
+import { Fragment } from 'react';
+import { Header } from 'semantic-ui-react';
 import { useStore } from '../../../app/stores/store';
+import CitaListItem from './CitaListItem';
 
 export default observer(function CitaList() {
   const { citaStore } = useStore();
-  const { deleteCita, citasByDate, loading } = citaStore;
-  const [target, setTarget] = useState("");
-
-  function handleDeleteCita(e: SyntheticEvent<HTMLButtonElement>, id: string) {
-    setTarget(e.currentTarget.name);
-    deleteCita(id);
-  }
+  const { groupedCitas } = citaStore;
 
   return (
-    <Segment>
-      <Item.Group divided>
-        {citasByDate.map(cita => (
-          <Item key={cita.id}>
-            <Item.Content>
-              <Item.Header as='a'>{cita.titulo}</Item.Header>
-              <Item.Meta>{cita.fechaHoraInicio.toString()}</Item.Meta>
-              <Item.Description>
-                <div>{cita.descripcion}</div>
-                <div>{cita.cliente}, {cita.nota}</div>
-              </Item.Description>
-              <Item.Extra>
-                <Button as={Link} to={`/citas/${cita.id}`} floated='right' content='View' color='blue' />
-                <Button 
-                  name={cita.id}
-                  loading={loading && target === cita.id} 
-                  onClick={(e) => handleDeleteCita(e, cita.id)} 
-                  floated='right' 
-                  content='Delete' 
-                  color='red' />
-                <Label basic content={cita.tratamientos} />
-              </Item.Extra>
-            </Item.Content>
-          </Item>
-        ))}
-      </Item.Group>
-    </Segment>
+    <>
+      {groupedCitas.map(([group, citas]) => (
+        <Fragment key={group}>
+          <Header sub color='teal'>
+            {group}
+          </Header>
+          {citas.map(cita => (
+            <CitaListItem key={cita.id} cita={cita} />
+          ))}
+        </Fragment>
+      ))}
+    </>
   )
 })
